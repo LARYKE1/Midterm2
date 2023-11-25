@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements ContactListener{
         //I do have a problem with this one, the adapter gets notificated for the new list
         //sometimes will not update the old list, so this caused to not refresh the adapter and the
         //list will not be updated in the case of edit or add of a new contact
-        etSearch.addTextChangedListener(new TextWatcher() {
+        /*etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -75,8 +75,7 @@ public class MainActivity extends AppCompatActivity implements ContactListener{
             public void afterTextChanged(Editable editable) {
                 searchFilter(editable.toString());
             }
-        });
-
+        });*/
     }
 
     /**

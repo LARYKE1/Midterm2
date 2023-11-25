@@ -3,9 +3,14 @@ package com.example.midterm2;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.IpSecManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.concurrent.Executor;
@@ -18,6 +23,7 @@ public class CreateActivity extends AppCompatActivity {
     private Button btnBack;
     private ContactDao contactDao;
     private final Executor executor= Executors.newSingleThreadExecutor();
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +33,11 @@ public class CreateActivity extends AppCompatActivity {
         getDataToEdit(); // Get data to edit or add new contact
         //Button to get back to Main Activity
         btnBack.setOnClickListener(view -> {
-            Intent intent = new Intent(CreateActivity.this, MainActivity.class);
-            startActivity(intent);
+           /* Intent intent = new Intent(CreateActivity.this, MainActivity.class);
+            startActivity(intent);*/
+
+            spinner.setVisibility(View.VISIBLE);
+
         });
     }
     /**
@@ -41,6 +50,9 @@ public class CreateActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.etPhone);
         btnAdd = findViewById(R.id.btnAdd);
         btnBack = findViewById(R.id.btnBack);
+        //
+        spinner=(ProgressBar) findViewById(R.id.progressBar);
+        spinner.setVisibility(View.GONE);
     }
 
     /**
@@ -81,13 +93,26 @@ public class CreateActivity extends AppCompatActivity {
         //check if the contact is null, if it is null that means it needs to add a new contact
         if (contact == null) {
             btnAdd.setOnClickListener(view -> {
-                executor.execute(() -> {
-                    if (addContact()) {
-                        Intent intent = new Intent(CreateActivity.this, MainActivity.class);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                });
+                spinner.setVisibility(View.VISIBLE);
+                if(spinner.isIndeterminate()){
+                    executor.execute(() -> {
+                        try {
+                            Thread.sleep(2000);
+                            runOnUiThread(()->{
+                                spinner.setVisibility(View.GONE);
+                            });
+                            if (addContact()) {
+                                Intent intent = new Intent(CreateActivity.this, MainActivity.class);
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            }
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    });
+                }
+
             });
         } else {
             etName.setText(contact.getName());
